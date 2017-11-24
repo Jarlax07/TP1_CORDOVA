@@ -28,7 +28,7 @@ const fakeresult : Result[] = [{
 export class HomePage {
   films:Result[];
   constructor(public navCtrl: NavController) {
-    this.films=null;;
+    this.films=null;
   }
 
   initializeFilms(){
@@ -48,6 +48,10 @@ export class HomePage {
       this.films=null;
       return false;
     }
+  }
+
+  isNull(){
+    return(this.films==null);
   }
 
 }
