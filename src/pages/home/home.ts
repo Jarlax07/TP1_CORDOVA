@@ -1,57 +1,48 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { NgForOf } from '@angular/common/src/directives/ng_for_of';
+import { DetailsPage } from '../details/details';
+import { Observable } from 'rxjs/Observable';
+import { HttpClient } from '@angular/common/http';
 
 export interface Result {
-  author: string;
-  date: number;
-  image: string;
   title: string;
+  overview:string;
+  poster_path:string;
+  backdrop_path:string;
+  release_date:number;
+
 }
 
-const fakeresult : Result[] = [{
-  author:'Julien COURTIAL',
-  date:2017,
-  image:'http://lorempixel.com/200/200/',
-  title:'L\'aventure d\'un major'
-},{
-  author: 'Vincente ALIBERT',
-  date: 2017,
-  image: 'http://lorempixel.com/200/200/',
-  title: "L'aventure d'un footballeur"
-}]
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-  films:Result[];
-  constructor(public navCtrl: NavController) {
-    this.films=null;
-  }
+  films:Observable<Result[]>;
+  params:any;
+  pushPage=DetailsPage;
 
-  initializeFilms(){
-    this.films=fakeresult;
+  constructor(private http : HttpClient) {
+    this.films=null;
+
   }
 
   getFilms(ev:any){
-    this.initializeFilms();
 
     let val =ev.target.value;
 
-    if (val && val.trim() != '') {
-      this.films = this.films.filter((film) => {
-        return (film.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      })
+    if(val){
+      this.films=this.fetchResults(val);
     }else{
-      this.films=null;
-      return false;
+      this.films=Observable.of([]);
     }
+
   }
 
-  isNull(){
-    return(this.films==null);
+
+  fetchResults(query : string):Observable<Result[]>{
+
+    return  this.http.get<Result[]>("https://api.themoviedb.org/3/search/movie?api_key=ebb02613ce5a2ae58fde00f4db95a9c1&language=fr&query="+query).pluck('results');
   }
 
 }

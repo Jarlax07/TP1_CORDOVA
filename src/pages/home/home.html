@@ -1,22 +1,23 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Recherche Film
+      Recherche de films TMDB
     </ion-title>
   </ion-navbar>
   <ion-searchbar (ionInput)="getFilms($event)"></ion-searchbar>
 </ion-header>
 
 <ion-content padding>
-  <div *ngIf="isNull()">Aucun Résultats</div>
+  <div *ngIf="!(films | async)?.length">Aucun Résultats</div>
   <ion-list>
-    <ion-item *ngFor="let film of films">
-      <ion-thumbnail item-start>
-        <img [src]="film.image">
-      </ion-thumbnail>
-      <h2>{{film.title}}</h2>
-      <p>{{film.author}} • {{film.date}}</p>
-    </ion-item>
+    <button ion-item *ngFor="let film of films | async" [navPush]="pushPage" [navParams]='film'>
+        <ion-thumbnail item-start>
+          <img [src]="'https://image.tmdb.org/t/p/w154'+ film.poster_path" >
+        </ion-thumbnail>
+        <h2>{{film.title}}</h2>
+        <p> {{film.release_date}}</p>
+
+    </button >
 
   </ion-list>
 </ion-content>
