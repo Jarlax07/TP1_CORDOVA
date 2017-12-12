@@ -14,8 +14,9 @@
 
 
 <ion-content padding>
+  <h4 style ="text-align : center">{{film.title}} </h4>
   <img [src]="'https://image.tmdb.org/t/p/w640'+ film.poster_path"><br>
-    <h4>Titre : {{film.title}} </h4>
-    <h4>Sortie : {{film.release_date}} </h4>
-
+  <h4>Sortie : {{film.release_date | date}} </h4>
+  <h4>Description :  </h4>{{film.overview}}
+  <h4> <a href="'https://www.themoviedb.org/movie/'+ film.id">Lien</a></h4>
 </ion-content>
