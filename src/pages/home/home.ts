@@ -3,7 +3,7 @@ import { DetailsPage } from '../details/details';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import { api_key } from '../../app/tmdb';
-import { AlertController } from 'ionic-angular';
+import { AlertController,Platform } from 'ionic-angular';
 import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { Shake } from '@ionic-native/shake';
 import { Subscription } from 'rxjs/Subscription';
@@ -15,6 +15,7 @@ export interface Result {
   backdrop_path:string;
   release_date:number;
   id:number;
+  vote_average:number;
 
 }
 
@@ -23,22 +24,30 @@ export interface Result {
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+export class HomePage{
   films:Observable<Result[]>;
   params:any;
   pushPage=DetailsPage;
+  confirm=null;
+
+  private shakeSubscription: Subscription;
 
 
-
-
-  constructor(private http: HttpClient, public alertCtrl: AlertController, public navCtrl: NavController, private shake : Shake, private shakeSubscription : Subscription ) {
+  constructor(
+    private http: HttpClient,
+    public alertCtrl: AlertController,
+    public navCtrl: NavController,
+    private shake : Shake,
+    private platform : Platform
+  ) {
     this.films=null;
-
 
   }
 
+
   ionViewDidEnter() {
-    this.shakeSubscription = this.shake.startWatch()
+    this.shakeSubscription = Observable.fromPromise(this.platform.ready())
+      .switchMap(() => this.shake.startWatch())
       .switchMap(() => this.discoverMovies())
       .subscribe(movies => this.showRandomMovieAlert(movies));
   }
@@ -73,7 +82,11 @@ export class HomePage {
   private showRandomMovieAlert(movies: Result[]): void{
     let i = Math.floor(Math.random() * movies.length);
 
-    let confirm = this.alertCtrl.create({
+    if(this.confirm != null){
+      this.confirm.dismiss();
+    }
+
+    this.confirm = this.alertCtrl.create({
       title: movies[i].title,
       message: movies[i].overview,
       buttons: [
@@ -88,7 +101,7 @@ export class HomePage {
         }
       ]
     });
-    confirm.present();
+    this.confirm.present();
   }
 
 

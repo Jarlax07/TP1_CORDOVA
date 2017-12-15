@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { Result } from '../home/home';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 /**
  * Generated class for the DetailsPage page.
@@ -15,12 +16,21 @@ import { Result } from '../home/home';
 })
 export class DetailsPage {
   film:Result;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  url:string;
+  browser:InAppBrowser;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, public iab: InAppBrowser) {
     this.film=navParams.data;
+    this.url = 'https://www.themoviedb.org/movie/' + this.film.id;
+    this.browser=iab;
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DetailsPage');
+  }
+
+  lien(){
+    this.iab.create(this.url,'_system');
   }
 
 }
